@@ -19,7 +19,7 @@ public class Postagem {
 	
 	@Id //Primary key (id)
 	@GeneratedValue(strategy = GenerationType.IDENTITY)//auto_increment
-	private long id;
+	private Long id;
 	
 	@Column(length=100)
 	@NotBlank(message= "O atrituto titulo é obrigatório!")
@@ -33,12 +33,11 @@ public class Postagem {
 	
 	@UpdateTimestamp
 	private LocalDateTime data;
-	
-	
-	public long getId() {
+		
+	public Long getId() {
 		return id;
 	}
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 	public String getTitulo() {
