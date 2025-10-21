@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/postagens")
-@CrossOrigin(origins ="*",allowedHeaders = "*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostagemController {
 
 	@Autowired
@@ -36,60 +36,67 @@ public class PostagemController {
 	private TemaRepository temaRepository;
 	
 	@GetMapping
-	public ResponseEntity<List<Postagem>> getall(){
+	public ResponseEntity<List<Postagem>> getAll(){
+			
 		return ResponseEntity.ok(postagemRepository.findAll());
-		//Select*from td_postagens
+		
+		// SELECT * FROM tb_postagens;
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Postagem> getByid(@PathVariable Long id){
-		return postagemRepository.findById(id).map(resposta -> ResponseEntity.ok(resposta))
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+	public ResponseEntity<Postagem> getById(@PathVariable Long id){
+		return postagemRepository.findById(id)
+				.map(resposta -> ResponseEntity.ok(resposta))
+				.orElse(ResponseEntity.notFound().build());
+				
+		// SELECT * FROM tb_postagens WHERE id = ?;
 	}
 	
 	@GetMapping("/titulo/{titulo}")
 	public ResponseEntity<List<Postagem>> getAllByTitulo(@PathVariable String titulo){
 		return ResponseEntity.ok(postagemRepository.findAllByTituloContainingIgnoreCase(titulo));
-		//Select*from td_postagens
+
 	}
 	
-	@PostMapping 
+	@PostMapping
 	public ResponseEntity<Postagem> post(@Valid @RequestBody Postagem postagem){
 		
 		if(temaRepository.existsById(postagem.getTema().getId())) {
-		postagem.setId(null); 
-		return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
+		
+			postagem.setId(null);
+			
+			return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
 		}
-		throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"O tema não existe!",null);
+		
+		throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Tema não existe!", null);
 	}
 	
-
-	// Método para atualizar uma postagem existente
-    @PutMapping
-    public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem){
-
-        if (postagemRepository.existsById(postagem.getId())) {
-
-            if (temaRepository.existsById(postagem.getTema().getId())) {
-
-                return ResponseEntity.status(HttpStatus.OK).body(postagemRepository.save(postagem));
-            }
-
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Tema inexistente!", null);
-        }
-
-        return ResponseEntity.notFound().build();
-
-    }
+	@PutMapping
+	public ResponseEntity<Postagem> put(@Valid @RequestBody Postagem postagem){
+		
+		if (postagemRepository.existsById(postagem.getId())) {
+			
+			if(temaRepository.existsById(postagem.getTema().getId())) {
+				
+				return ResponseEntity.status(HttpStatus.OK).body(postagemRepository.save(postagem));
+			}
+			
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "O Tema não existe!", null);
+		}
+		
+		return ResponseEntity.notFound().build();
+	}
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
 	public void delete(@PathVariable Long id) {
-		Optional<Postagem> postagem = postagemRepository.findById(id);
-		if(postagem.isEmpty())
-				throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-			
-		postagemRepository.deleteById(id);
 		
+		Optional<Postagem> postagem = postagemRepository.findById(id);
+		
+		if(postagem.isEmpty())
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+		
+		postagemRepository.deleteById(id);
 	}
-} 
+	
+}
