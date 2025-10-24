@@ -113,5 +113,84 @@ public class UsuarioControllerTest {
 		
 	}
 	
+	@Test
+	@DisplayName("04 - Deve listar todos os usuários com sucesso")
+	void deveListarTodosUsuarios() {
+		
+		// Given
+		usuarioService.cadastrarUsuario(TestBuilder.criarUsuario(null, "Lucila", 
+				"lucila@email.com.br", "12345678"));
+		usuarioService.cadastrarUsuario(TestBuilder.criarUsuario(null, "Camila", 
+				"camilaa@email.com.br", "12345678"));
+		
+		// When
+		String token = JwtHelper.obterToken(testRestTemplate, USUARIO, SENHA);
+		HttpEntity<Void> requisicao = JwtHelper.criarRequisicaoComToken(token);
+		ResponseEntity<Usuario[]> resposta = testRestTemplate.exchange(
+				BASE_URL + "/all", HttpMethod.GET, requisicao, Usuario[].class);
+		
+		// Then
+		assertEquals(HttpStatus.OK, resposta.getStatusCode());
+		assertNotNull(resposta.getBody());
+	}
+	
+	@Test
+	@DisplayName("05 - Deve listar um usuário específico pelo id")
+	void deveListarUsuarioPorId() {
+
+	    // Given
+	    Usuario usuario = TestBuilder.criarUsuario(null, "Marina Costa", "marina@email.com", "12345678");
+	    Optional<Usuario> usuarioCadastrado = usuarioService.cadastrarUsuario(usuario);
+
+	    // When
+	    String token = JwtHelper.obterToken(testRestTemplate, USUARIO, SENHA);
+	    HttpEntity<Void> requisicao = JwtHelper.criarRequisicaoComToken(token);
+
+	    ResponseEntity<Usuario> resposta = testRestTemplate.exchange(
+	            BASE_URL + "/" + usuarioCadastrado.get().getId(), // Ex: /usuarios/3
+	            HttpMethod.GET,
+	            requisicao,
+	            Usuario.class
+	    );
+
+	    // Then
+	    assertEquals(HttpStatus.OK, resposta.getStatusCode());
+	    assertNotNull(resposta.getBody());
+	    assertEquals(usuarioCadastrado.get().getId(), resposta.getBody().getId());
+	    assertEquals("Marina Costa", resposta.getBody().getNome());
+	}
+	
+	@Test
+	@DisplayName("06 - Deve autenticar um usuário com sucesso")
+	void deveAutenticarUsuario() {
+
+	    // Given
+	    Usuario usuario = TestBuilder.criarUsuario(null, "Bruno Silva", "bruno@email.com", "12345678");
+	    usuarioService.cadastrarUsuario(usuario);
+
+	    // Cria um usuárioLogin apenas com email e senha
+	    Usuario usuarioLogin = TestBuilder.criarUsuario(null, null, "bruno@email.com", "12345678");
+
+	    HttpEntity<Usuario> requisicao = new HttpEntity<>(usuarioLogin);
+
+	    // When
+	    ResponseEntity<String> resposta = testRestTemplate.exchange(
+	            BASE_URL + "/logar",
+	            HttpMethod.POST,
+	            requisicao,
+	            String.class
+	    );
+
+	    // Then
+	    assertEquals(HttpStatus.OK, resposta.getStatusCode());
+	    assertNotNull(resposta.getBody());
+	    // O corpo geralmente contém o token JWT, podemos verificar se contém "token" ou algo similar
+	    // dependendo de como o endpoint retorna
+	    assert(resposta.getBody().contains("token") || resposta.getBody().contains("Token"));
+	}
+
+
+	
+	
+	
 }
- 
