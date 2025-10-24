@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 @Configuration
 @EnableWebSecurity
-public class BasicSecurityConfig {
+public class SecurityConfig {
 
     private static final String[] PUBLIC_ENDPOINTS = {
         "/usuarios/logar",

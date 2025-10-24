@@ -34,7 +34,7 @@ public class UsuarioController {
 		return ResponseEntity.ok(usuarioService.getAll());
 	}
 	
-	@GetMapping("/{id}")
+	@GetMapping("/id/{id}")
 	public ResponseEntity<Usuario> getById(@PathVariable Long id){
 		return usuarioService.getById(id)
 				.map(resposta -> ResponseEntity.ok(resposta))

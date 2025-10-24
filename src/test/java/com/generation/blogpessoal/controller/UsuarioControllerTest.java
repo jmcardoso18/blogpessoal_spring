@@ -147,7 +147,7 @@ public class UsuarioControllerTest {
 	    HttpEntity<Void> requisicao = JwtHelper.criarRequisicaoComToken(token);
 
 	    ResponseEntity<Usuario> resposta = testRestTemplate.exchange(
-	            BASE_URL + "/" + usuarioCadastrado.get().getId(), // Ex: /usuarios/3
+	            BASE_URL + "/" + usuarioCadastrado.get().getId(), 
 	            HttpMethod.GET,
 	            requisicao,
 	            Usuario.class
@@ -187,10 +187,5 @@ public class UsuarioControllerTest {
 	    // O corpo geralmente contém o token JWT, podemos verificar se contém "token" ou algo similar
 	    // dependendo de como o endpoint retorna
 	    assert(resposta.getBody().contains("token") || resposta.getBody().contains("Token"));
-	}
-
-
-	
-	
-	
+	}	
 }
